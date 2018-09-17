@@ -1,16 +1,18 @@
-%% Copyright (c) 2018 EMQ Technologies Co., Ltd. All Rights Reserved.
-%%
-%% Licensed under the Apache License, Version 2.0 (the "License");
-%% you may not use this file except in compliance with the License.
-%% You may obtain a copy of the License at
-%%
-%%     http://www.apache.org/licenses/LICENSE-2.0
-%%
-%% Unless required by applicable law or agreed to in writing, software
-%% distributed under the License is distributed on an "AS IS" BASIS,
-%% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-%% See the License for the specific language governing permissions and
-%% limitations under the License.
+%%%===================================================================
+%%% Copyright (c) 2013-2018 EMQ Enterprise, Inc. All Rights Reserved.
+%%%
+%%% Licensed under the Apache License, Version 2.0 (the "License");
+%%% you may not use this file except in compliance with the License.
+%%% You may obtain a copy of the License at
+%%%
+%%%     http://www.apache.org/licenses/LICENSE-2.0
+%%%
+%%% Unless required by applicable law or agreed to in writing, software
+%%% distributed under the License is distributed on an "AS IS" BASIS,
+%%% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+%%% See the License for the specific language governing permissions and
+%%% limitations under the License.
+%%%===================================================================
 
 -module(ekka_boot).
 
@@ -18,7 +20,7 @@
 
 %% only {F, Args}...
 apply_module_attributes(Name) ->
-    [{Module, [apply(Module, F, Args) || {F, Args} <- Attrs]} ||
+    [{Module, [apply(Module, F, Args) || {F, Args} <- Attrs]} || 
         {_App, Module, Attrs} <- all_module_attributes(Name)].
 
 %% Copy from rabbit_misc.erl
@@ -38,6 +40,7 @@ all_module_attributes(Name) ->
               end
       end, [], Targets).
 
+%% Copy from rabbit_misc.erl
 module_attributes(Module) ->
     case catch Module:module_info(attributes) of
         {'EXIT', {undef, [{Module, module_info, [attributes], []} | _]}} ->
