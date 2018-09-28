@@ -1,12 +1,14 @@
 .PHONY: tests
 
 PROJECT = ekka
-PROJECT_DESCRIPTION = Autocluster and Autoheal for EMQ
-PROJECT_VERSION = 0.3
+PROJECT_DESCRIPTION = Autocluster and Autoheal for EMQ X Broker
+PROJECT_VERSION = 0.4.1
 
-DEPS = lager jsx
-dep_jsx   = git https://github.com/talentdeficit/jsx
-dep_lager = git https://github.com/basho/lager master
+DEPS = jsx
+dep_jsx = git https://github.com/talentdeficit/jsx 2.9.0
+
+BUILD_DEPS = lager
+dep_lager = git https://github.com/erlang-lager/lager 3.6.4
 
 LOCAL_DEPS = mnesia inets
 
@@ -16,14 +18,14 @@ ERLC_OPTS += +debug_info
 ERLC_OPTS += +'{parse_transform, lager_transform}'
 
 BUILD_DEPS = cuttlefish
-dep_cuttlefish = git https://github.com/emqtt/cuttlefish
+dep_cuttlefish = git https://github.com/emqx/cuttlefish
 
 TEST_ERLC_OPTS += +debug_info
 TEST_ERLC_OPTS += +'{parse_transform, lager_transform}'
 
 EUNIT_OPTS = verbose
 
-CT_SUITES = ekka ekka_lib ekka_autocluster
+CT_SUITES = ekka ekka_lib ekka_autocluster ekka_locker
 
 CT_OPTS = -cover test/ct.cover.spec -erl_args -name ekka_ct@127.0.0.1
 
