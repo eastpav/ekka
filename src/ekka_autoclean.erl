@@ -31,6 +31,7 @@ timer_backoff(State = #?MODULE{expiry = Expiry}) ->
 
 check(State = #?MODULE{expiry = Expiry}) ->
     [maybe_clean(Member, Expiry) || Member <- ekka_membership:members(down)],
+    [maybe_clean(M, Expiry) || M <- ekka_membership:members(stopped)],
     timer_backoff(State).
 
 maybe_clean(#member{node = Node, ltime = LTime}, Expiry) ->

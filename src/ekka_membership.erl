@@ -75,7 +75,9 @@ is_member(Node) ->
 members() ->
     ets:tab2list(membership).
 
--spec(members(up | down) -> [member()]).
+-spec(members(up | down | stopped) -> [member()]).
+members(stopped) ->
+    [M || M = #member{mnesia = St} <- members(), St =:= stopped];
 members(Status) ->
     [M || M = #member{status = St} <- members(), St =:= Status].
 
