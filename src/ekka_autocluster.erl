@@ -16,7 +16,7 @@
 
 -include("ekka.hrl").
 
--export([enabled/0, run/2, unregister_node/0]).
+-export([enabled/0, run/1, unregister_node/0]).
 -export([aquire_lock/1, release_lock/1]).
 
 -define(LOG(Level, Format, Args), lager:Level("Ekka(AutoCluster): " ++ Format, Args)).
@@ -29,8 +29,8 @@ enabled() ->
         undefined         -> false
     end.
 
--spec(run(atom(), fun() | mfa()) -> any()).
-run(App, Fun) ->
+-spec(run(atom()) -> any()).
+run(App) ->
     case aquire_lock(App) of
         ok ->
             spawn(fun() ->
@@ -44,7 +44,7 @@ run(App, Fun) ->
                       after
                           release_lock(App)
                       end,
-                      maybe_run_again(App, Fun)
+                      maybe_run_again(App)
                   end);
         failed -> ignore
     end.
@@ -58,18 +58,13 @@ wait_application_ready(App, Retries) ->
                  wait_application_ready(App, Retries - 1)
     end.
 
-maybe_run_again(App, Fun) ->
+maybe_run_again(App) ->
     %% Check if the node joined cluster?
     case ekka_mnesia:is_node_in_cluster() of
-        true  -> run_callback(Fun), ok;
+        true  -> ok;
         false -> timer:sleep(15000),
-                 run(App, Fun)
+                 run(App)
     end.
-
-run_callback(Fun) when is_function(Fun) ->
-    Fun();
-run_callback({M, F, A}) ->
-    erlang:apply(M, F, A).
 
 -spec(discover_and_join() -> any()).
 discover_and_join() ->
