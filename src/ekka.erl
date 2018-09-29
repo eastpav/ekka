@@ -84,7 +84,7 @@ autocluster() ->
 
 autocluster(App) ->
     case env(cluster_enable, true) andalso ekka_autocluster:enabled() of
-        true  -> ekka_autocluster:run();
+        true  -> ekka_autocluster:run(App);
         false -> ignore
     end.
 
