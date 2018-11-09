@@ -31,12 +31,11 @@ timer_backoff(State = #?MODULE{expiry = Expiry}) ->
 
 check(State = #?MODULE{expiry = Expiry}) ->
     [maybe_clean(Member, Expiry) || Member <- ekka_membership:members(down)],
-    [maybe_clean(M, Expiry) || M <- ekka_membership:members(stopped)],
     timer_backoff(State).
 
-maybe_clean(#member{node = Node, ltime = LTime}, Expiry) ->
+maybe_clean(#member{node = Node, status = Status, mnesia = Mnesia, ltime = LTime}, Expiry) ->
     case expired(LTime, Expiry) of
-        true  -> ekka_cluster:force_leave(Node);
+        true  -> io:format("clean node ~p ~p ~p~n", [Node, Status, Mnesia]), ekka_cluster:force_leave(Node);
         false -> ok
     end.
 

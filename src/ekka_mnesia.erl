@@ -24,7 +24,7 @@
          cluster_status/0, cluster_status/1, cluster_view/0,
          cluster_nodes/1, running_nodes/0]).
 
--export([is_node_in_cluster/0, is_node_in_cluster/1]).
+-export([is_node_in_cluster/0, is_node_in_cluster/1, not_alone_running/0]).
 
 %% Dir, schema and tables
 -export([data_dir/0, copy_schema/1, delete_schema/0, del_schema_copy/1,
@@ -228,6 +228,9 @@ is_node_in_cluster(Node) when Node =:= node() ->
     is_node_in_cluster();
 is_node_in_cluster(Node) ->
     lists:member(Node, cluster_nodes(all)).
+
+not_alone_running() ->
+    ekka_mnesia:cluster_nodes(running) =/= [node()].
 
 %% @private
 %% @doc Is running db node.

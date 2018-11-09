@@ -18,6 +18,7 @@
 
 -export([enabled/0, run/1, unregister_node/0]).
 -export([aquire_lock/1, release_lock/1]).
+-export([detect/1]).
 
 -define(LOG(Level, Format, Args), lager:Level("Ekka(AutoCluster): " ++ Format, Args)).
 
@@ -61,10 +62,34 @@ wait_application_ready(App, Retries) ->
 maybe_run_again(App) ->
     %% Check if the node joined cluster?
     case ekka_mnesia:is_node_in_cluster() of
-        true  -> ok;
+        true  -> io:format("autocluster ok~n"), monitor_cluster(App), ok;
         false -> timer:sleep(15000),
                  run(App)
     end.
+
+get_monitor() ->
+    application:get_env(ekka, cluster_monitor, null).
+set_monitor(Pid) ->
+    application:set_env(ekka, cluster_monitor, Pid).
+
+monitor_cluster(App) ->
+    case get_monitor() of
+        null ->
+            Pid = spawn(?MODULE, detect, [App]),
+            set_monitor(Pid);
+        _P ->
+            ok
+    end.
+
+detect(App) ->
+    case ekka_mnesia:is_node_in_cluster() andalso ekka_mnesia:not_alone_running() of
+        true ->
+            ok;
+        false ->
+            run(App)
+    end,
+    timer:sleep(15000),
+    detect(App).
 
 -spec(discover_and_join() -> any()).
 discover_and_join() ->
